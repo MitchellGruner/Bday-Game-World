@@ -22,7 +22,7 @@
     "noUnusedParameters": true,
     "incremental": true,
     "composite": true,
-    "noFallthroughCasesInSwitch": true,
+    "noFallthroughCasesInSwitch": true
   },
   "include": ["src"]
 }
