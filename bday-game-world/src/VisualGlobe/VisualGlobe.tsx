@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import Globe from 'react-globe.gl';
 import { useBdayGameTimes } from './hooks/useBdayGameTimes';
+import type { GameEvent } from './hooks/useBdayGameTimes';
 
 export function VisualGlobe() {
-  const { events, getCurrentTimeString } = useBdayGameTimes();
-  const [markers, setMarkers] = useState<typeof events>([]);
+  const { getActiveEvents } = useBdayGameTimes();
+
+  const [markers, setMarkers] = useState<GameEvent[]>([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const currentTime = getCurrentTimeString();
-      const activeEvents = events.filter((e) => e.time === currentTime);
+      const activeEvents = getActiveEvents();
       setMarkers(activeEvents);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [events, getCurrentTimeString]);
+  }, [getActiveEvents]);
 
   return (
     <div className="max-w-full">
