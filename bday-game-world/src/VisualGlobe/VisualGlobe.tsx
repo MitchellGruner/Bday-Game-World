@@ -1,11 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Globe from 'react-globe.gl';
+import { useBdayGameTimes } from './hooks/useBdayGameTimes';
 
 export function VisualGlobe() {
-  const markers = [
-    { lat: 34.0522, lng: -118.2437, size: 0.5, color: 'red', label: 'Los Angeles' },
-    { lat: 51.5074, lng: 0.1278, size: 0.5, color: 'blue', label: 'London' },
-  ];
+  const { events, getCurrentTimeString } = useBdayGameTimes();
+  const [markers, setMarkers] = useState<typeof events>([]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentTime = getCurrentTimeString();
+      const activeEvents = events.filter((e) => e.time === currentTime);
+      setMarkers(activeEvents);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [events, getCurrentTimeString]);
 
   return (
     <div className="max-w-full">
