@@ -28,6 +28,7 @@ interface EventData {
 
 export interface GameEvent {
   time: string;
+  timeZone?: string;
   lat: number;
   lng: number;
   size: number;
@@ -140,20 +141,42 @@ const WORLD_TIMEZONES: TimezoneData[] = [
   { timezone: 'Pacific/Auckland', lat: -36.8485, lng: 174.7633 },
 ];
 
-function formatTimeHHMM(date: Date) {
-  const h = date.getHours().toString().padStart(2, '0');
-  const m = date.getMinutes().toString().padStart(2, '0');
-  return `${h}:${m}`;
-}
-
 function getCurrentTimeInTimezone(timezone: string) {
   const now = new Date();
-  return formatTimeHHMM(new Date(now.toLocaleString('en-US', { timeZone: timezone })));
+
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: timezone,
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(now);
+}
+
+function getTimezoneAbbreviation(timezone: string) {
+  const now = new Date();
+
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone,
+    timeZoneName: 'short',
+  }).formatToParts(now);
+
+  return parts.find((part) => part.type === 'timeZoneName')?.value ?? '';
+}
+
+function getTimeWithTimezone(timezone: string) {
+  const now = new Date();
+
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone,
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZoneName: 'short',
+  }).format(now);
 }
 
 function getCentralTime() {
-  const now = new Date();
-  return formatTimeHHMM(new Date(now.toLocaleString('en-US', { timeZone: 'America/Chicago' })));
+  return getTimeWithTimezone('America/Chicago');
 }
 
 export function useBdayGameTimes() {
@@ -175,13 +198,16 @@ export function useBdayGameTimes() {
     WORLD_TIMEZONES.forEach((timeData) => {
       const currentTime = getCurrentTimeInTimezone(timeData.timezone);
 
+      const timezoneAbbreviation = getTimezoneAbbreviation(timeData.timezone);
+
       events.forEach((event) => {
         if (event.time === currentTime) {
           activeEvents.push({
             ...event,
             lat: timeData.lat,
             lng: timeData.lng,
-            label: `Event ${event.time} at ${timeData.timezone}`,
+            timeZone: timezoneAbbreviation,
+            label: `Event ${event.time} ${timezoneAbbreviation} at ${timeData.timezone}`,
             showTimeInPin: true,
           });
         }
