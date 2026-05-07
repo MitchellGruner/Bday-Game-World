@@ -34,12 +34,16 @@ export function VisualGlobe() {
           const color = TIME_COLORS[d.time] || 'rgba(255,255,255,0.6)';
           const showTime = d.showTimeInPin;
 
+          const timeWithZone = d.timeZone
+            ? `${d.time} <span class="visualGlobePin__tz">${d.timeZone}</span>`
+            : d.time;
+
           el.innerHTML = `
             <div class="visualGlobePin">
               <div class="visualGlobePin__iconWrapper">
                 <i class="fa-solid fa-${iconName} visualGlobePin__icon"></i>
               </div>
-              ${showTime ? `<div class="visualGlobePin__time">${d.time}</div>` : ''}
+              ${showTime ? `<div class="visualGlobePin__time">${timeWithZone}</div>` : ''}
               <div class="visualGlobePin__line"></div>
             </div>
           `;
