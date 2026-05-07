@@ -45,4 +45,12 @@ $line-height: 45px;
     height: $line-height;
     opacity: 0.6;
   }
+
+  &__tz {
+    font-size: 10px;
+    color: #ccc;
+    margin-left: 4px;
+    font-family: $time-font;
+    opacity: 0.8;
+  }
 }
