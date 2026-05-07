@@ -33,6 +33,7 @@ export interface GameEvent {
   size: number;
   icon: IconDefinition;
   label: string;
+  showTimeInPin?: boolean;
 }
 
 interface TimezoneData {
@@ -164,6 +165,7 @@ export function useBdayGameTimes() {
       size: 0.5,
       icon: eventData[index % eventData.length].icon,
       label: `Event ${time}`,
+      showTimeInPin: true,
     }));
   }, []);
 
@@ -180,6 +182,7 @@ export function useBdayGameTimes() {
             lat: timeData.lat,
             lng: timeData.lng,
             label: `Event ${event.time} at ${timeData.timezone}`,
+            showTimeInPin: true,
           });
         }
       });
