@@ -3,6 +3,7 @@ import Globe from 'react-globe.gl';
 import { useBdayGameTimes } from './hooks/useBdayGameTimes';
 import type { GameEvent } from './hooks/useBdayGameTimes';
 import { TIME_COLORS } from './hooks/useBdayGameTimes';
+import './styles/VisualGlobe.scss';
 
 export function VisualGlobe() {
   const { getActiveEvents } = useBdayGameTimes();
@@ -30,38 +31,27 @@ export function VisualGlobe() {
           el.style.transform = 'translate(-50%, -100%)';
 
           const iconName = typeof d.icon === 'string' ? d.icon : d.icon?.iconName || 'circle';
-
           const color = TIME_COLORS[d.time] || 'rgba(255,255,255,0.6)';
+          const showTime = d.showTimeInPin;
 
           el.innerHTML = `
-            <div style="display:flex; flex-direction:column; align-items:center;">
-              
-              <div style="
-                width: 30px;
-                height: 30px;
-                background: rgba(255, 255, 255, 0.25);
-                border: 1px solid ${color};
-                border-radius: 50%;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                backdrop-filter: blur(4px);
-              ">
-                <i class="fa-solid fa-${iconName}" style="
-                  color: #ffffff;
-                  font-size: 14px;
-                "></i>
+            <div class="visualGlobePin">
+              <div class="visualGlobePin__iconWrapper">
+                <i class="fa-solid fa-${iconName} visualGlobePin__icon"></i>
               </div>
-        
-              <div style="
-                width: 2px;
-                height: 45px;
-                background: ${color};
-                opacity: 0.6;
-              "></div>
-        
+              ${showTime ? `<div class="visualGlobePin__time">${d.time}</div>` : ''}
+              <div class="visualGlobePin__line"></div>
             </div>
           `;
+
+          const iconWrapper = el.querySelector(`.visualGlobePin__iconWrapper`) as HTMLElement;
+          if (iconWrapper) {
+            iconWrapper.style.borderColor = color;
+          }
+          const line = el.querySelector(`.visualGlobePin__line`) as HTMLElement;
+          if (line) {
+            line.style.background = color;
+          }
 
           return el;
         }}
