@@ -1,7 +1,29 @@
 import { useMemo } from 'react';
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+
+import {
+  faClock,
+  faWind,
+  faCakeCandles,
+  faGift,
+  faChartPie,
+  faBookBible,
+  faLeaf,
+  faFrog,
+  faSun,
+  faTractor,
+  faHotdog,
+  faPlane,
+  faCalendar,
+  faFaceGrinHearts,
+  fa1,
+  faCandyCane,
+  faTree,
+  faMartiniGlassCitrus,
+} from '@fortawesome/free-solid-svg-icons';
 
 interface EventData {
-  color: string;
+  icon: IconDefinition;
 }
 
 export interface GameEvent {
@@ -9,7 +31,7 @@ export interface GameEvent {
   lat: number;
   lng: number;
   size: number;
-  color: string;
+  icon: IconDefinition;
   label: string;
 }
 
@@ -20,18 +42,12 @@ interface TimezoneData {
 }
 
 const times: string[] = [
-  '00:24',
-  '00:25',
-  '00:31',
-  '00:34',
   '01:00',
   '02:10',
   '02:20',
   '03:12',
   '03:14',
   '03:16',
-  '03:21',
-  '03:33',
   '04:20',
   '05:24',
   '05:30',
@@ -41,31 +57,62 @@ const times: string[] = [
   '09:24',
   '10:24',
   '11:11',
+  '12:24',
+  '12:25',
+  '12:31',
+  '12:34',
 ];
 
 const eventData: EventData[] = [
-  { color: 'red' },
-  { color: 'green' },
-  { color: 'blue' },
-  { color: 'orange' },
-  { color: 'purple' },
-  { color: 'yellow' },
-  { color: 'pink' },
-  { color: 'cyan' },
-  { color: 'magenta' },
-  { color: 'lime' },
-  { color: 'teal' },
-  { color: 'brown' },
-  { color: 'navy' },
-  { color: 'olive' },
-  { color: 'maroon' },
-  { color: 'aqua' },
-  { color: 'silver' },
-  { color: 'gold' },
-  { color: 'coral' },
-  { color: 'indigo' },
-  { color: 'black' },
+  { icon: faClock },
+  { icon: faWind },
+  { icon: faCakeCandles },
+  { icon: faGift },
+  { icon: faChartPie },
+  { icon: faBookBible },
+  { icon: faLeaf },
+  { icon: faFrog },
+  { icon: faSun },
+  { icon: faTractor },
+  { icon: faHotdog },
+  { icon: faPlane },
+  { icon: faLeaf },
+  { icon: faCalendar },
+  { icon: faFaceGrinHearts },
+  { icon: fa1 },
+  { icon: faCandyCane },
+  { icon: faTree },
+  { icon: faMartiniGlassCitrus },
+  { icon: faClock },
 ];
+
+export const TIME_COLORS: Record<string, string> = {
+  '01:00': '#fcd34d',
+  '02:10': '#fdba74',
+  '02:20': '#fca5a5',
+  '03:12': '#a7f3d0',
+  '03:14': '#4ade80',
+  '03:16': '#34d399',
+  '03:21': '#22d3ee',
+  '03:33': '#60a5fa',
+  '04:20': '#818cf8',
+  '05:24': '#c084fc',
+  '05:30': '#e879f9',
+  '06:10': '#f472b6',
+  '07:11': '#fb7185',
+  '09:11': '#38bdf8',
+  '09:24': '#2dd4bf',
+  '10:24': '#fbbf24',
+  '11:11': '#3b82f6',
+  '12:24': '#a5b4fc',
+  '12:25': '#93c5fd',
+  '12:31': '#67e8f9',
+  '12:34': '#86efac',
+};
+
+function getTimeColor(time: string): string {
+  return TIME_COLORS[time] ?? 'rgba(255,255,255,0.5)';
+}
 
 const WORLD_TIMEZONES: TimezoneData[] = [
   { timezone: 'Pacific/Honolulu', lat: 21.3069, lng: -157.8583 },
@@ -92,32 +139,30 @@ const WORLD_TIMEZONES: TimezoneData[] = [
   { timezone: 'Pacific/Auckland', lat: -36.8485, lng: 174.7633 },
 ];
 
+function formatTimeHHMM(date: Date) {
+  const h = date.getHours().toString().padStart(2, '0');
+  const m = date.getMinutes().toString().padStart(2, '0');
+  return `${h}:${m}`;
+}
+
 function getCurrentTimeInTimezone(timezone: string) {
-  return new Date().toLocaleString('en-US', {
-    hour12: false,
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: timezone,
-  });
+  const now = new Date();
+  return formatTimeHHMM(new Date(now.toLocaleString('en-US', { timeZone: timezone })));
 }
 
 function getCentralTime() {
-  return new Date().toLocaleString('en-US', {
-    hour12: false,
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: 'America/Chicago',
-  });
+  const now = new Date();
+  return formatTimeHHMM(new Date(now.toLocaleString('en-US', { timeZone: 'America/Chicago' })));
 }
 
 export function useBdayGameTimes() {
-  const events = useMemo(() => {
+  const events = useMemo<GameEvent[]>(() => {
     return times.map((time, index) => ({
       time,
       lat: 0,
       lng: 0,
       size: 0.5,
-      color: eventData[index % eventData.length].color,
+      icon: eventData[index % eventData.length].icon,
       label: `Event ${time}`,
     }));
   }, []);
@@ -143,5 +188,10 @@ export function useBdayGameTimes() {
     return activeEvents;
   }
 
-  return { events, getActiveEvents, getCentralTime };
+  return {
+    events,
+    getActiveEvents,
+    getCentralTime,
+    getTimeColor,
+  };
 }
